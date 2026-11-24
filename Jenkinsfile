@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        PATH = "C:\\Users\\pc\\AppData\\Local\\Programs\\Python\\Python313;C:\\Users\\pc\\AppData\\Local\\Programs\\Python\\Python313\\Scripts;${env.PATH}"
+    }
+
     stages {
         stage('Clonage') {
             steps {
