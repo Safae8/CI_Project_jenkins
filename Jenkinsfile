@@ -2,11 +2,13 @@
 pipeline {
     agent any
 
-    environment {
-        PATH = "C:\\Users\\pc\\AppData\\Local\\Programs\\Python\\Python313;C:\\Users\\pc\\AppData\\Local\\Programs\\Python\\Python313\\Scripts;${env.PATH}"
-    }
-
     stages {
+        stage('Nettoyage Workspace') {
+            steps {
+                deleteDir()
+            }
+        }
+
         stage('Clonage') {
             steps {
                 git branch: 'main',
@@ -27,7 +29,7 @@ pipeline {
             }
         }
 
-        stage('Analyse qualité du code') {
+        stage('Analyse qualité du code (Pylint)') {
             steps {
                 bat 'python -m pylint calculator.py || exit /b 0'
             }
@@ -54,11 +56,24 @@ pipeline {
                 '''
             }
         }
+
+        stage('Publication de l artefact') {
+            steps {
+                bat '''
+                curl -v ^
+                -u admin:safae123 ^
+                --upload-file Release.zip ^
+                http://localhost:8081/repository/python-release/Release.zip
+                '''
+            }
+        }
     }
 
     post {
         always {
+            echo '================================'
             echo 'Pipeline terminé'
+            echo '================================'
         }
         success {
             echo 'BUILD SUCCESS'
