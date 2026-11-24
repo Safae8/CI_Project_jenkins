@@ -1,6 +1,9 @@
-
 pipeline {
     agent any
+
+    environment {
+        PATH = "C:\\Users\\pc\\AppData\\Local\\Programs\\Python\\Python313;C:\\Users\\pc\\AppData\\Local\\Programs\\Python\\Python313\\Scripts;${env.PATH}"
+    }
 
     stages {
         stage('Nettoyage Workspace') {
@@ -47,11 +50,9 @@ pipeline {
                 if exist Release rmdir /S /Q Release
                 if exist Release.zip del Release.zip
                 mkdir Release
-
                 copy calculator.py Release
                 copy test_calculator.py Release
                 copy requirements.txt Release
-
                 powershell Compress-Archive -Path Release\\* -DestinationPath Release.zip -Force
                 '''
             }
@@ -75,11 +76,7 @@ pipeline {
             echo 'Pipeline terminé'
             echo '================================'
         }
-        success {
-            echo 'BUILD SUCCESS'
-        }
-        failure {
-            echo 'BUILD FAILED'
-        }
+        success { echo 'BUILD SUCCESS' }
+        failure { echo 'BUILD FAILED' }
     }
 }
